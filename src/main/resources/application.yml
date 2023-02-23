@@ -1,0 +1,15 @@
+
+server:
+  port: 9393
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /docs
+
+

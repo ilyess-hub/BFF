@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  bff-microservice:
+    build:
+      context: .
+    ports:
+      - "9393:9393"
+
+networks:
+  microserviceproducer_kafka-net:
+    external: true
