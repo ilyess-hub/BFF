@@ -10,4 +10,3 @@ user:
     host: ${USER_SERVICE_HOST:my-spring-boot-app}
     port: ${USER_SERVICE_PORT:9090}
     path: ${USER_SERVICE_PATH:/user}
-    userServiceBaseUrl: ${FULL_PATH:my-spring-boot-app:9090/user}
