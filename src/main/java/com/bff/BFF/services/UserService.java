@@ -2,39 +2,137 @@ package com.bff.BFF.services;
 
 import com.bff.BFF.models.User;
 import com.bff.BFF.repos.UserRepo;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Data
 public class UserService {
-    private final UserRepo userRepo;
+
+
+
+    @Value("${user.service.host}")
+    private String userServiceHost;
+
+    @Value("${user.service.port}")
+    private int userServicePort;
+
+    @Value("${user.service.path}")
+    private String userServicePath;
+
+    private final WebClient.Builder webClientBuilder;
+
+
+
 
     public Mono<User> getUserById(String id) {
-        return userRepo.findById(id);
+
+        // Build a WebClient instance using the webClientBuilder
+        WebClient webClient = webClientBuilder.build();
+
+        // Use the WebClient instance to call the user microservice endpoint that returns a user with the specified id
+        return webClient.get()
+                .uri(uri -> uri.
+                        host(userServiceHost).
+                        port(userServicePort).
+                        path(userServicePath+"/"+id)
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(User.class);
     }
 
     public Flux<User> getAllUsers() {
-        return userRepo.findAll();
+
+        // Build a WebClient instance using the webClientBuilder
+        WebClient webClient = webClientBuilder.build();
+
+        // Use the WebClient instance to call the user microservice endpoint that returns all users
+        return webClient.get()
+                .uri(uri -> uri.
+                        host(userServiceHost).
+                        port(userServicePort).
+                        path(userServicePath)
+                        .build()
+                )
+                .retrieve()
+                .bodyToFlux(User.class);
+
+
     }
+
+
 
     public Mono<User> createUser(User user) {
-        return userRepo.save(user);
+
+        // Build a WebClient instance using the webClientBuilder
+        WebClient webClient = webClientBuilder.build();
+
+        // Use the WebClient instance to call the user microservice endpoint that creates a new user
+        return webClient.post()
+                .uri(uri -> uri.
+                        host(userServiceHost).
+                        port(userServicePort).
+                        path(userServicePath)
+                        .build()
+                )
+                .bodyValue(user)
+                .retrieve()
+                .bodyToMono(User.class);
+
+
     }
 
+
+
+
+
+
+
+
+
     public Mono<User> updateUser(String id, User user) {
-        return userRepo.findById(id)
-                .flatMap(existingUser -> {
-                    existingUser.setName(user.getName());
-                    existingUser.setBalance(user.getBalance());
-                    return userRepo.save(existingUser);
-                });
+
+        // Build a WebClient instance using the webClientBuilder
+        WebClient webClient = webClientBuilder.build();
+
+        // Use the WebClient instance to call the user microservice endpoint that updates an existing user with the specified id
+        return webClient.put()
+                .uri(uri -> uri.
+                        host(userServiceHost).
+                        port(userServicePort).
+                        path(userServicePath+"/"+id)
+                        .build()
+                )
+                .bodyValue(user)
+                .retrieve()
+                .bodyToMono(User.class);
+
+
     }
 
     public Mono<Void> deleteUser(String id) {
-        return userRepo.deleteById(id);
+
+        // Build a WebClient instance using the webClientBuilder
+        WebClient webClient = webClientBuilder.build();
+
+        // Use the WebClient instance to call the user microservice endpoint that deletes an existing user with the specified id
+        return webClient.delete()
+                .uri(uri -> uri.
+                        host(userServiceHost).
+                        port(userServicePort).
+                        path(userServicePath+"/"+id)
+                        .build()
+                )
+                .retrieve()
+                .bodyToMono(Void.class);
     }
-}
+    }
+
 
