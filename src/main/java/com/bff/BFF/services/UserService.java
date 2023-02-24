@@ -26,13 +26,46 @@ public class UserService {
     @Value("${user.service.port}")
     private int userServicePort;
 
+
     @Value("${user.service.path}")
     private String userServicePath;
 
-    @Value("${user.service.userServiceBaseUrl}")
-    private String userServiceBaseUrl;
+
 
     private final WebClient.Builder webClientBuilder;
+
+
+
+
+    public <T> Mono<T> createOrUpdateResource(T object ,Class<T> response, String resourcePath, HttpMethod httpMethod) {
+        WebClient webClient = WebClient.builder()
+                .baseUrl("http://" + userServiceHost + ":" + userServicePort) // Replace with your base URL
+                .build();
+
+        return webClient.method(httpMethod)
+                .uri(resourcePath)
+                .body(BodyInserters.fromValue(object))
+                .retrieve()
+                .bodyToMono(response);
+    }
+
+
+
+    public Mono<User> createUser(User user) {
+        String resourcePath = "/user"; // Replace with your endpoint path
+        return createOrUpdateResource(user, User.class, resourcePath, HttpMethod.POST);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
     public Mono<User> getUserById(String id) {
@@ -76,39 +109,12 @@ public class UserService {
 
     }
 
-    public <T> Mono<T> createOrUpdateResource(T obj ,Class<T> response, String resourcePath, HttpMethod httpMethod) {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(userServiceBaseUrl) // Replace with your base URL
-                .build();
 
-        return webClient.method(httpMethod)
-                .uri(resourcePath)
-                .body(BodyInserters.fromValue(obj))
-                .retrieve()
-                .bodyToMono(response);
-    }
-
-    public Mono<User> createUser(User user) {
-        String resourcePath = "/user/"; // Replace with your endpoint path
-        return createOrUpdateResource(user, User.class, resourcePath, HttpMethod.POST);
-    }
 
     public Mono<User> updateUser(User user) {
         String resourcePath = "/users/" + user.getId(); // Replace with your endpoint path
         return createOrUpdateResource(user, User.class, resourcePath, HttpMethod.PUT);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public Mono<User> updateUser(String id, User user) {

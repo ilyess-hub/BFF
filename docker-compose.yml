@@ -1,9 +1,16 @@
 version: '3'
 
 services:
+
   bff-microservice:
     build:
       context: .
+    networks:
+      - microserviceproducer_kafka-net
+    environment:
+      USER_SERVICE_HOST: my-spring-boot-app
+      USER_SERVICE_PORT: 9090
+      USER_SERVICE_PATH: /user
     ports:
       - "9393:9393"
 

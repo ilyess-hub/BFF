@@ -19,6 +19,14 @@ public class UserController {
 
 
 
+    @PostMapping
+    public Mono<User> createUser(User user) {
+        return userService.createUser(user);
+    }
+
+
+
+
     @GetMapping("/{id}")
     public Mono<User> getUserById(String id) {
         return userService.getUserById(id);
@@ -32,10 +40,6 @@ public class UserController {
 
 
 
-    @PostMapping
-    public Mono<User> createUser(User user) {
-       return userService.createUser(user);
-    }
 
 
 
